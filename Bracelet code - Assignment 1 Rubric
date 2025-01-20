@@ -1,7 +1,7 @@
 def FibbonacciN(x,y,n=10):#implements fibbonacci mod n
     sequence = [x,y] #initialises our sequence
     pairs = [] #creates a list of all pairs in our sequence
-    while sequence[-2:] not in pairs: #checks if the latest pair in our sequence has come up before, so we know when to stop our code as a rbacelet would have formed..
+    while sequence[-2:] not in pairs: #checks if the latest pair in our sequence has come up before, so we know when to stop our code as a bracelet would have formed.
         pairs.append(sequence[-2:]) 
         z = (x+y) % n #finds the next term of the sequence
         sequence.append(z) #adds the next term of the sequence
