@@ -1,0 +1,58 @@
+import numpy as np
+
+def is_full(board):
+    """Check if the board is full."""
+    return all(cell is not None for row in board for cell in row)
+
+def compute_winner(board):
+    """Compute the determinant and return the winner."""
+    matrix = np.array(board, dtype=int)
+    det = np.linalg.det(matrix)
+    return 1 if det != 0 else 0  # Player 1 wins if determinant is non-zero
+
+def canonical_form(board,newnum=-1):
+    # Idea: use row and column operations to get a normal form
+    processed_board = tuple(tuple(newnum if cell is None else cell for cell in row) for row in board)
+    processed_board = tuple(sorted(processed_board))  # Sort the rows
+    processed_board = tuple(zip(*processed_board))  # Get the transpose
+    processed_board = tuple(sorted(processed_board))
+    return processed_board
+
+def minimax(board, player_number, turn_order=[0,1], move_dict={0:[0],1:[1]}, seen_before={},newnum=None):
+    if newnum is None:
+        newnum=min(move_dict[0]+move_dict[1])-1
+    board_key = canonical_form(board,newnum)  # Convert board to its canonical form to use as a key in seen_before
+    try:
+        return seen_before[board_key]  # Recall saved answer
+    except:
+        pass  # If answer isn't saved then continue!
+    if is_full(board):
+        result = compute_winner(board)
+        seen_before[board_key] = result
+        return result
+    for i in range(len(board)):
+        for j in range(len(board[i])):
+            if board[i][j] is None:
+                for n in move_dict[turn_order[player_number]]:
+                    board[i][j] = n  # Make move
+                    outcome = minimax(board, (player_number+1)%len(turn_order), turn_order, move_dict, seen_before, newnum)  # Recursively call minimax
+                    board[i][j] = None  # Undo move
+                    if outcome == turn_order[player_number]:  # If a winning move is found, store and return it
+                        seen_before[board_key] = turn_order[player_number]
+                        return turn_order[player_number]
+
+    # If no winning move is found, store the losing result
+    seen_before[board_key] = 1-turn_order[player_number]
+    return 1-turn_order[player_number]
+
+def determine_winner(n, turn_order=[0,1], move_dict={0:[0],1:[1]}):
+    board = [[None] * n for _ in range(n)]
+    return minimax(board, 0, turn_order, move_dict, {}, None)
+
+'''dicts=[{0:[0],1:[1,-1]} for _ in range(4)]#,{0:[0],1:[1,-1]},{0:[0],1:[0,1]},{0:[1],1:[0]},{0:[1,-1],1:[1,-1]}]
+orders=[[0,1], [1,0], [0,1,1], [1,1,0]]
+Run tests using this function 
+for d in range(len(dicts)):
+    for i in range(2, 5):
+        winner = determine_winner(i, orders[d], dicts[d])
+       print(f"Winner for {i}×{i} board with moves {dicts[d]} and turn order {orders[d]}: Player {winner}")'''
