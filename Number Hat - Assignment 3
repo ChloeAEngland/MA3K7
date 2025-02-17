@@ -1,0 +1,45 @@
+from random import sample
+from matplotlib import pyplot as plt
+from math import exp
+
+def numberHat(A):
+    while len(A)>1:
+        a,b=sample(A,2) #takes 2 random elements from our list and assigns them
+        A.remove(a) #removes from the list
+        A.remove(b)
+        A.append(abs(a-b)) #adds their difference to the list
+    return A[0]
+        
+def histHat(N,p=10000):
+    B=[numberHat(list(range(1,N+1))) for i in range(p)]
+    plt.hist(B,[-0.5+i for i in range(N+2)])
+    plt.xlabel('Final number attained')
+    plt.ylabel('Frequency of final number')
+    #plt.xticks(np.arange(0,N+2))
+    plt.title(f'N={N}')
+    plt.show()
+    
+def findPossible(A,p=1000): #gives all possible outcomes from NumberHat
+    poss=list(set([numberHat(A.copy()) for i in range(p)]))
+    poss.sort()
+    return poss
+    
+        
+def histHatCompare(N,p=10000):
+    B=[numberHat(list(range(1,N+1))) for i in range(p)]
+    mean=sum([b//2 for b in B])/p
+    X=[]
+    Y=[]
+    i=int(B[0]%2==1)
+    while i<=N:
+        X.append(i)
+        Y.append(p*(exp(-(i//2)/mean)-exp(-(i//2+1)/mean))) #This is expected frequency, moddeling it using exponential distribution
+        i+=2
+    plt.scatter(X,Y,alpha=0.6,color='b',s=10,marker='.')
+    plt.hist(B,[-0.5+i for i in range(N+2)],alpha=0.6,color='r')
+    plt.xlabel('Final number attained')
+    plt.ylabel('Frequency of final number')
+    #plt.xticks(np.arange(0,N+2))
+    plt.title(f'N={N}')
+    plt.show()
+    
