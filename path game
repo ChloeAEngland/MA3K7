@@ -1,0 +1,72 @@
+from numpy.random import poisson
+from random import randint
+from random import random
+from matplotlib import pyplot as plt
+from math import ceil
+from math import log
+
+def graph(M=20,reps=1000):
+    data=[0 for i in range(M+1)]
+    for i in range(reps):
+        number = 1
+        data[1]+=1/reps
+        while number < M:
+            number+= randint(1,2)
+            if number <= M:
+                data[number]+=1/reps
+    plt.scatter(range(M),data[:-1])
+    plt.title(f"Estimates for P_N against actual P_N")
+    plt.ylabel(f"Estimate for P_N")
+    plt.xlabel("N")
+    plt.scatter(range(1,M),[(-2/3)*(-1/2)**i+(2/3) for i in range(1,M)],color='r',marker='x')
+    plt.legend(['Estimated P_N','Actual P_N'])
+    plt.show()
+    return sum(data)/M
+
+
+def pathPoisson(N,lam=1,pwr=2):
+    number = 1
+    while number < N:
+        number+= poisson(lam)**pwr
+    return number == N
+
+def graphPoisson(M=2000,reps=10000,lam=1,pwr=2):
+    data=[0 for i in range(M+1)]
+    for i in range(reps):
+        number = 1
+        while number < M:
+            number+= (poisson(lam)+1)**pwr
+            if number <= M:
+                data[number]+=1/reps
+    plt.scatter(range(M),data[:-1])
+    plt.title(f"Estimates for P_N where jumps are taken from poisson({lam})^{pwr}")
+    plt.ylabel(f"Estimate for P_N")
+    plt.xlabel("N")
+    plt.show()
+    return sum(data)/M
+
+def sample(r):
+    return ceil(log(random(),r))
+
+def graphExtend(r,M=100,reps=1000):
+    data=[0 for i in range(M+1)]
+    for i in range(reps):
+        number = 1
+        data[1]+=1/reps
+        while number < M:
+            number+= sample(r)
+            if number <= M:
+                data[number]+=1/reps
+    plt.scatter(range(M),data[:-1])
+    plt.title(f"Estimates for P_N given r={r}")
+    plt.ylabel(f"Estimate for P_N")
+    plt.xlabel("N")
+    plt.show()
+    return sum(data)/M
+
+
+
+
+
+
+
